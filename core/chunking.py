@@ -1,4 +1,4 @@
-def chunking_with_overlapping(text,chunk_size=7,overlap=2):
+def chunking_with_overlapping(text,chunk_size=200,overlap=50):
     tokens= text.split(" ")
     
     chunks=[]
@@ -17,7 +17,3 @@ def chunking_with_overlapping(text,chunk_size=7,overlap=2):
     
     return chunks
 
-chunk = "The quick brown fox jumps over the lazy dog."
-result = chunking_with_overlapping(text=chunk)
-for r in result:
-    print(r)

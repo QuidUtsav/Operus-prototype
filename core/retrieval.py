@@ -63,7 +63,7 @@ def hybrid_search(faiss_index, bm25, query, query_embedding, chunks, top_k=3, k=
 
 
 rerank_model = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
-def rerank(query,chunks,top_k=20):
+def rerank(query,chunks,top_k=3):
     pairs = [[query,chunk["text"]] for chunk in chunks]
     result = rerank_model.predict(pairs)
     top_indices = np.argsort(result)[-top_k:][::-1]
