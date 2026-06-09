@@ -2,10 +2,13 @@ from transformers import AutoModelForCausalLM,AutoTokenizer
 
 
 model_name="Qwen/Qwen2.5-1.5B-Instruct"
-model = AutoModelForCausalLM.from_pretrained(model_name,dtype="float16",device_map="auto")
+model = AutoModelForCausalLM.from_pretrained(model_name,
+                                             dtype="float16",
+                                             device_map="auto"
+                                             )
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 
-def generate_response(query,system_prompt="You are Jarvis. You are a helpful assistant.",max_new_tokens=512):
+def generate_response(query,system_prompt="You are Jarvis. You are a helpful assistant.",max_new_tokens=200):
     messages = [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": query}]
