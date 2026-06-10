@@ -38,8 +38,7 @@ def build_bm25_index(chunks):
     return bm25
  
 def search_bm25(bm25, query, chunks, top_k=3):
-    
-    tokenized_query = query.split(" ")
+    tokenized_query = " ".join(tokenize_for_bm25(query))
     
     scores = bm25.get_scores(tokenized_query)
     sorted_scores_indices =np.argsort(scores)[-top_k:][::-1]

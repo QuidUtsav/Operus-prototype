@@ -1,4 +1,4 @@
-from core.retrieval import build_faiss_index, build_bm25_index, hybrid_search, rerank
+from core.retrieval import build_faiss_index, build_bm25_index, hybrid_search, rerank,tokenize_for_bm25
 from core.chunking import chunking_with_overlapping
 from sentence_transformers import SentenceTransformer
 

@@ -26,7 +26,6 @@ def web_search(query):
         results = list(ddgs.text(query, max_results=3))
     chunks = [r["body"] for r in results]
     searched_content = "\n".join(chunk for chunk in chunks)
-    print(type(searched_content))
     summarized_result = generate_response(query = f"User question: {query}\n\nWeb results:\n{searched_content}",system_prompt=system_prompt,max_new_tokens=200)
     return summarized_result
     
