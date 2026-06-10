@@ -5,8 +5,13 @@ from intent_routing.needs_retrieval import handle_retrieval
 from intent_routing.needs_web import web_search
 from core.memory import SemanticMemory
 
+last_5_conversation_history=[]
+def update_history(history, query, result):
+    history.append({"role": "user", "content": query})
+    history.append({"role": "assistant", "content": result})
+    return history[-10:]
 memory = SemanticMemory()
-def classify_intent(query):
+def classify_intent(query,prev_intent):
     
     system_prompt = (
             "You are an expert intent classification routing agent. "
@@ -46,25 +51,30 @@ def classify_intent(query):
     Query: What is the capital of Nepal?
     Intent: direct_answer
 
-    Query: {query}
-    Intent:"""
+    previous intent was Query: {query}
+    previous intent was Intent:{prev_intent} """
 
-    return generate_response(prompt, system_prompt=system_prompt,max_new_tokens=20).strip()
+    return generate_response(prompt, system_prompt=system_prompt,max_new_tokens=20,conversation_history=None).strip()
 
 
 print("how can i help you today? ")
-
+intent=None
 while True:
     
     query = input()
-    intent= classify_intent(query)
+    intent= classify_intent(query,prev_intent=intent)
     print(intent)
     if intent == "chat" or intent == "direct_answer":
-        print(generate_response(query))
+        result = generate_response(query,system_prompt=f"You are Jarvis. You are a helpful assistant.",max_new_tokens=200,conversation_history=last_5_conversation_history)
+        last_5_conversation_history= update_history(last_5_conversation_history,query=query,result=result)    
+        print(result)
     elif intent=="needs_retrieval":
         top_relevant_chunk = handle_retrieval(query)
-        result = generate_response(query=query,system_prompt=f"You are Jarvis. You are a helpful assistant. summaraize this given document{top_relevant_chunk}",max_new_tokens=200)
+        result = generate_response(query=query,system_prompt=f"You are Jarvis. You are a helpful assistant. summaraize this given document{top_relevant_chunk}",max_new_tokens=200,conversation_history=last_5_conversation_history)
+        last_5_conversation_history= update_history(last_5_conversation_history,query=query,result=result)    
         print(result)
     elif intent=="needs_web":
-        result = web_search(query)
+        result = web_search(query,last_5_conversation_history)
+        last_5_conversation_history= update_history(last_5_conversation_history,query=query,result=result)    
+
         print(result)

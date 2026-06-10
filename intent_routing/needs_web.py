@@ -21,11 +21,16 @@ system_prompt = (
     "or 'According to my web search...'. Just give the answer."
 )
 
-def web_search(query):
+def web_search(query, history=None):
+    if history is not None:
+        search_keywords=generate_response(query=query,system_prompt="You are a helpful assistant. You are provided with user's web search query and their prevous chat logs. Use it to create a new query pointing their exact query. IMPORTANT: Only output raw keywords and absolutely nothing else.",max_new_tokens=40,conversation_history=history)
+    else:
+        search_keywords=query
     with DDGS() as ddgs:
-        results = list(ddgs.text(query, max_results=3))
+        results = list(ddgs.text(search_keywords, max_results=3))
     chunks = [r["body"] for r in results]
     searched_content = "\n".join(chunk for chunk in chunks)
-    summarized_result = generate_response(query = f"User question: {query}\n\nWeb results:\n{searched_content}",system_prompt=system_prompt,max_new_tokens=200)
+    print(searched_content)
+    summarized_result = generate_response(query = f"User question: {query}\n\nWeb results:\n{searched_content}",system_prompt=system_prompt,max_new_tokens=200,conversation_history=history)
     return summarized_result
     

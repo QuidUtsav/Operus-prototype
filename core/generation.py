@@ -8,10 +8,14 @@ model = AutoModelForCausalLM.from_pretrained(model_name,
                                              )
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 
-def generate_response(query,system_prompt="You are Jarvis. You are a helpful assistant.",max_new_tokens=200):
-    messages = [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": query}]
+def generate_response(query,system_prompt="You are Jarvis. You are a helpful assistant.",max_new_tokens=200,conversation_history=None):
+    system_message = {"role": "system", "content": system_prompt}
+    current_user_mesage={"role": "user", "content": query}
+                
+    if conversation_history is None:
+        messages = [system_message,current_user_mesage]
+    else:
+        messages = [system_message]+ conversation_history+ [current_user_mesage]
     text = tokenizer.apply_chat_template(
     messages,
     tokenize=False,
