@@ -48,10 +48,10 @@ def classify_intent(query,prev_intent):
     Query: could you go through the document and find X
     Intent: needs_retrieval
 
-    Query: What is the capital of Nepal?
+    Query: What is the capital of Nepal
     Intent: direct_answer
 
-    previous intent was Query: {query}
+    previous query was Query: {query}
     previous intent was Intent:{prev_intent} """
 
     return generate_response(prompt, system_prompt=system_prompt,max_new_tokens=20,conversation_history=None).strip()
@@ -61,20 +61,22 @@ print("how can i help you today? ")
 intent=None
 while True:
     
-    query = input()
+    query = input("User : ").strip()
+    if not query:
+        continue
     intent= classify_intent(query,prev_intent=intent)
-    print(intent)
+    print(f"intent: {intent}")
     if intent == "chat" or intent == "direct_answer":
         result = generate_response(query,system_prompt=f"You are Jarvis. You are a helpful assistant.",max_new_tokens=200,conversation_history=last_5_conversation_history)
         last_5_conversation_history= update_history(last_5_conversation_history,query=query,result=result)    
-        print(result)
+        print(f"ai:{result}")
     elif intent=="needs_retrieval":
         top_relevant_chunk = handle_retrieval(query)
         result = generate_response(query=query,system_prompt=f"You are Jarvis. You are a helpful assistant. summaraize this given document{top_relevant_chunk}",max_new_tokens=200,conversation_history=last_5_conversation_history)
         last_5_conversation_history= update_history(last_5_conversation_history,query=query,result=result)    
-        print(result)
+        print(f"ai:{result}")
     elif intent=="needs_web":
         result = web_search(query,last_5_conversation_history)
         last_5_conversation_history= update_history(last_5_conversation_history,query=query,result=result)    
 
-        print(result)
+        print(f"ai:{result}")
