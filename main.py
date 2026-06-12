@@ -45,6 +45,9 @@ def classify_intent(query,prev_intent):
     Query: summarize the document i uploaded
     Intent: needs_retrieval
 
+    Query: Can you check in the internet?
+    Intent: needs_web
+    
     Query : could you sumarize the document i uploaded
     intent : needs_retrieval
 
@@ -73,17 +76,18 @@ while True:
     else:
         query = input("User: ").strip()
     if not query:
-        print("Didn't catch that, try again.")
+        print("Didn't catch that, please try again.")
+        speak("Didn't catch that, please try again.")
         continue
     intent= classify_intent(query,prev_intent=intent)
     print(f"intent: {intent}\nquery:{query}")
     if intent == "chat" or intent == "direct_answer":
-        result = generate_response(query,system_prompt=f"You are Jarvis. You are a helpful assistant.",max_new_tokens=200,conversation_history=last_5_conversation_history)
+        result = generate_response(query,system_prompt=f"You are Operus. You are a helpful assistant.",max_new_tokens=200,conversation_history=last_5_conversation_history)
         last_5_conversation_history= update_history(last_5_conversation_history,query=query,result=result)    
         output(result=result,mode=mode)
     elif intent=="needs_retrieval":
         top_relevant_chunk = handle_retrieval(query)
-        result = generate_response(query=query,system_prompt=f"You are Jarvis. You are a helpful assistant. summaraize this given document{top_relevant_chunk}",max_new_tokens=200,conversation_history=last_5_conversation_history)
+        result = generate_response(query=query,system_prompt=f"You are Operus. You are a helpful assistant. summaraize this given document{top_relevant_chunk}",max_new_tokens=200,conversation_history=last_5_conversation_history)
         last_5_conversation_history= update_history(last_5_conversation_history,query=query,result=result)    
         output(result=result, mode = mode)
     elif intent=="needs_web":

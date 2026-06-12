@@ -34,7 +34,7 @@ def on_release(key):
 def record_audio():
     global is_recording, audio_chunks
     audio_chunks = []
-    with sd.InputStream(samplerate=SAMPLE_RATE, channels=CHANNELS, callback=audio_callback, device=5):
+    with sd.InputStream(samplerate=SAMPLE_RATE, channels=CHANNELS, callback=audio_callback, device='default'):
         input("Press Enter to start recording...")
         is_recording = True
         input("Press Enter to stop recording...")

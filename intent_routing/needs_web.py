@@ -19,8 +19,12 @@ system_prompt = (
     "repetitive or unhelpful, ignore the context completely and use your own broad internal knowledge base to answer.\n"
     "7. Keep your response conversational, authoritative, and direct. Avoid saying phrases like 'Based on the context provided...' "
     "or 'According to my web search...'. Just give the answer."
+    "CRITICAL GROUNDING RULES:\n"
+    "1. You must prioritize the provided Web Search Results over your own internal knowledge base.\n"
+    "2. If the search results state a fact that contradicts what you think you know, use the search result fact anyway.\n"
+    "3. Do not mention your internal training limits or state 'Based on my training data...'. Just speak the facts directly from the text.\n"
+    "4. If the data is missing from the search block, say 'I couldn't verify that cleanly from current web contexts.'"
 )
-
 def web_search(query, history=None):
     if history is not None:
         search_keywords=generate_response(query=query,system_prompt="You are a helpful assistant. You are provided with user's web search query and their prevous chat logs. Use it to create a new query pointing their exact query. IMPORTANT: Only output raw keywords and absolutely nothing else.",max_new_tokens=40,conversation_history=history)

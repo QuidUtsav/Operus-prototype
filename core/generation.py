@@ -25,7 +25,8 @@ def generate_response(query,system_prompt="You are Jarvis. You are a helpful ass
 
     outputs = model.generate(
         **model_inputs,
-        max_new_tokens=max_new_tokens
+        max_new_tokens=max_new_tokens,
+        temperature = 0.1
     )
     response = tokenizer.decode(outputs[0][len(model_inputs.input_ids[0]):],skip_special_tokens=True)
     return response
