@@ -1,11 +1,75 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from main import classify_intent
 from core.generation import generate_response
 from intent_routing.needs_retrieval import handle_retrieval
 from intent_routing.needs_web import web_search
 app = FastAPI()
 sessions={}
+last_5_conversation_history=[]
+
+def update_history(history, query, result):
+    history.append({"role": "user", "content": query})
+    history.append({"role": "assistant", "content": result})
+    return history[-10:]
+def classify_intent(query,prev_intent):
+    
+    system_prompt = (
+            "You are an expert intent classification routing agent. "
+            "Your job is to analyze a user query and output EXACTLY one of these four tags: "
+            "[needs_retrieval, needs_web, chat, direct_answer]. "
+            "Do not include any other text, explanation, or punctuation."
+        )
+        
+    prompt = f"""Classify the user query into one of the following intents:
+    - needs_retrieval: If the user asks about personal documents, uploaded files, or private data.
+    - needs_web: If the user asks about real-time events, weather, news, or things requiring a Google search.
+    - chat: If it's a greeting, casual banter, or small talk.
+    - direct_answer: If it's a general knowledge question, logic puzzle, or creative task that requires no external data.
+
+    Examples:
+    Query: Hello there!
+    Intent: chat
+
+    Query: What is the weather in Pokhara right now?
+    Intent: needs_web
+
+    Query: Sumarize the PDF report I uploaded yesterday.
+    Intent: needs_retrieval
+
+    Query: summarize the document i uploaded
+    Intent: needs_retrieval
+
+    Query: Can you check in the internet?
+    Intent: needs_web
+    
+    Query: Who is the current prime minister of Nepal?
+    Intent: needs_web
+
+    Query: Who is the CEO of OpenAI right now?
+    Intent: needs_web
+
+    Query: What happened in the news today?
+    Intent: needs_web
+    
+    Query : could you sumarize the document i uploaded
+    intent : needs_retrieval
+
+    Query: what does the file say about X
+    Intent: needs_retrieval
+
+    Query: could you go through the document and find X
+    Intent: needs_retrieval
+
+    Query: What is the capital of Nepal
+    Intent: direct_answer
+
+    Previous intent: {prev_intent if prev_intent else "none"}
+
+    Query: {query}
+    Intent:"" """
+
+    return generate_response(prompt, system_prompt=system_prompt,max_new_tokens=20,conversation_history=None).strip()
+
 def update_history(history, query, result):
     history.append({"role": "user", "content": query})
     history.append({"role": "assistant", "content": result})
