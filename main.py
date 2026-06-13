@@ -4,8 +4,8 @@ from core.generation import generate_response
 from intent_routing.needs_retrieval import handle_retrieval
 from intent_routing.needs_web import web_search
 from core.memory import SemanticMemory
-from core.voice import record_audio_and_transcribe
-from core.speak import speak
+# from core.voice import record_audio_and_transcribe
+# from core.speak import speak
 
 last_5_conversation_history=[]
 def output(result,mode):
