@@ -6,6 +6,14 @@ from intent_routing.needs_web import web_search
 app = FastAPI()
 sessions={}
 last_5_conversation_history=[]
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 def update_history(history, query, result):
     history.append({"role": "user", "content": query})
