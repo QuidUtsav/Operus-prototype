@@ -4,7 +4,6 @@ from sentence_transformers import CrossEncoder
 from rank_bm25 import BM25Okapi
 
 def build_faiss_index(chunks):
-    
     embeddings = np.array([c["embedding"] for c in chunks],dtype=np.float32)
     
     index = faiss.IndexFlatL2(384)

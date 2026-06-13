@@ -48,6 +48,15 @@ def classify_intent(query,prev_intent):
     Query: Can you check in the internet?
     Intent: needs_web
     
+    Query: Who is the current prime minister of Nepal?
+    Intent: needs_web
+
+    Query: Who is the CEO of OpenAI right now?
+    Intent: needs_web
+
+    Query: What happened in the news today?
+    Intent: needs_web
+    
     Query : could you sumarize the document i uploaded
     intent : needs_retrieval
 
@@ -60,37 +69,39 @@ def classify_intent(query,prev_intent):
     Query: What is the capital of Nepal
     Intent: direct_answer
 
-    previous query was Query: {query}
-    previous intent was Intent:{prev_intent} """
+    Previous intent: {prev_intent if prev_intent else "none"}
+
+    Query: {query}
+    Intent:"" """
 
     return generate_response(prompt, system_prompt=system_prompt,max_new_tokens=20,conversation_history=None).strip()
 
 
-intent=None
-while True:
-    mode = input("Input mode - text (t) or voice (v) or quit (q)? ").strip().lower()
-    if mode == "v":
-        query = record_audio_and_transcribe()
-    elif mode=="q":
-        break
-    else:
-        query = input("User: ").strip()
-    if not query:
-        print("Didn't catch that, please try again.")
-        speak("Didn't catch that, please try again.")
-        continue
-    intent= classify_intent(query,prev_intent=intent)
-    print(f"intent: {intent}\nquery:{query}")
-    if intent == "chat" or intent == "direct_answer":
-        result = generate_response(query,system_prompt=f"You are Operus. You are a helpful assistant.",max_new_tokens=200,conversation_history=last_5_conversation_history)
-        last_5_conversation_history= update_history(last_5_conversation_history,query=query,result=result)    
-        output(result=result,mode=mode)
-    elif intent=="needs_retrieval":
-        top_relevant_chunk = handle_retrieval(query)
-        result = generate_response(query=query,system_prompt=f"You are Operus. You are a helpful assistant. summaraize this given document{top_relevant_chunk}",max_new_tokens=200,conversation_history=last_5_conversation_history)
-        last_5_conversation_history= update_history(last_5_conversation_history,query=query,result=result)    
-        output(result=result, mode = mode)
-    elif intent=="needs_web":
-        result = web_search(query,last_5_conversation_history)
-        last_5_conversation_history= update_history(last_5_conversation_history,query=query,result=result)    
-        output(result=result, mode = mode)
+# intent=None
+# while True:
+#     mode = input("Input mode - text (t) or voice (v) or quit (q)? ").strip().lower()
+#     if mode == "v":
+#         query = record_audio_and_transcribe()
+#     elif mode=="q":
+#         break
+#     else:
+#         query = input("User: ").strip()
+#     if not query:
+#         print("Didn't catch that, please try again.")
+#         speak("Didn't catch that, please try again.")
+#         continue
+#     intent= classify_intent(query,prev_intent=intent)
+#     print(f"intent: {intent}\nquery:{query}")
+#     if intent == "chat" or intent == "direct_answer":
+#         result = generate_response(query,system_prompt=f"You are Operus. You are a helpful assistant.",max_new_tokens=200,conversation_history=last_5_conversation_history)
+#         last_5_conversation_history= update_history(last_5_conversation_history,query=query,result=result)    
+#         output(result=result,mode=mode)
+#     elif intent=="needs_retrieval":
+#         top_relevant_chunk = handle_retrieval(query)
+#         result = generate_response(query=query,system_prompt=f"You are Operus. You are a helpful assistant. summaraize this given document{top_relevant_chunk}",max_new_tokens=200,conversation_history=last_5_conversation_history)
+#         last_5_conversation_history= update_history(last_5_conversation_history,query=query,result=result)    
+#         output(result=result, mode = mode)
+#     elif intent=="needs_web":
+#         result = web_search(query,last_5_conversation_history)
+#         last_5_conversation_history= update_history(last_5_conversation_history,query=query,result=result)    
+#         output(result=result, mode = mode)
