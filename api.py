@@ -96,6 +96,12 @@ class ChatResponse(BaseModel):
     intent:str
     session_id:str
 
+from fastapi.responses import FileResponse
+
+@app.get("/")
+def serve_frontend():
+    return FileResponse("frontend/index.html")
+
 @app.post("/chat")
 def chat(request: ChatRequest):
     session = sessions.get(request.session_id, {"history": [], "prev_intent": None})
